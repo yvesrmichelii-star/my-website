@@ -1,4 +1,4 @@
-export type BookingStatus = "review" | "reject" | "manual_review";
+export type BookingStatus = "draft" | "review" | "manual_review" | "reject";
 
 export type EventType = "club" | "festival" | "lounge" | "private" | "corporate" | "concert";
 
