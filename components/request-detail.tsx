@@ -1,5 +1,5 @@
 "use client";
-
+import { screenBookingRequest } from "@/lib/screening"; 
 import { BookingRequest, ManagerCriteria } from "@/lib/types";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
@@ -99,6 +99,21 @@ export function RequestDetail({ request, criteria }: RequestDetailProps) {
 
   const daysUntil = getDaysUntilEvent(request.eventDate);
 
+// ✅ Confirm + screen booking (NEW)
+const handleConfirmAndScreen = () => {
+  if (!request) return;
+
+  const screeningResult = screenBookingRequest(request, criteria);
+
+  const finalizedRequest: BookingRequest = {
+    ...request,
+    ...screeningResult,
+  };
+
+  // TEMP: replace with your state/store update
+  console.log("Finalized booking request:", finalizedRequest);
+};
+
   // Calculate screening checks based on current criteria
   const feeCheck = request.proposedFee >= criteria.minimumFee;
   const feeInBorderline = request.proposedFee >= criteria.borderlineFeeMin && 
@@ -122,6 +137,13 @@ export function RequestDetail({ request, criteria }: RequestDetailProps) {
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm font-medium text-muted-foreground">{request.id}</span>
               <StatusBadge status={request.status} />
+      
+              {request.status === "draft" && (
+                <Badge variant="outline">
+                  Auto‑populated · Pending confirmation
+                </Badge>
+              )}
+
             </div>
             <h2 className="text-2xl font-semibold text-foreground">{request.venueName}</h2>
             <p className="text-muted-foreground">{eventTypeLabels[request.eventType]}</p>
@@ -597,13 +619,20 @@ export function RequestDetail({ request, criteria }: RequestDetailProps) {
       </div>
 
       <Separator />
+      
+
+
       <div className="flex items-center justify-end gap-3 p-4 bg-card">
-        {request.status === "review" && (
-          <>
-            <Button variant="outline">Request More Info</Button>
-            <Button className="bg-primary text-primary-foreground">Accept Booking</Button>
-          </>
-        )}
+        
+{request.status === "draft" && (
+  <Button
+    className="bg-primary text-primary-foreground"
+    onClick={handleConfirmAndScreen}
+  >
+    Confirm & Screen Booking
+  </Button>
+)}
+
         {request.status === "manual_review" && (
           <>
             <Button variant="outline">Request More Info</Button>
