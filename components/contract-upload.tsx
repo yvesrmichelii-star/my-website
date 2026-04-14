@@ -22,7 +22,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Upload, FileText, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { BookingRequest, EventType, ManagerCriteria, ContractDetails } from "@/lib/types";
-import { screenBookingRequest } from "@/lib/screening";
+
 
 interface ContractUploadProps {
   onRequestCreated: (request: BookingRequest) => void;
@@ -315,15 +315,15 @@ export function ContractUpload({ onRequestCreated, criteria }: ContractUploadPro
       contractFileName: fileName || undefined,
     };
 
-    // Run screening against the criteria
-    const screeningResult = screenBookingRequest(baseRequest, criteria);
+    
+// Create a DRAFT request — no screening yet
+const draftRequest: BookingRequest = {
+  ...baseRequest,
+  status: "draft",
+};
 
-    const newRequest: BookingRequest = {
-      ...baseRequest,
-      ...screeningResult,
-    };
+onRequestCreated(draftRequest);
 
-    onRequestCreated(newRequest);
     handleReset();
     setOpen(false);
   };
